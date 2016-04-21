@@ -19,7 +19,7 @@ Resource::Resource(const Game &g, const Position &p, double capacity):Piece(g,p)
 
 Resource::~Resource()
 {
-    
+
 }
 
 double Resource::consume()
@@ -34,7 +34,7 @@ void Resource::age()
 {
     __capacity -=RESOURCE_SPOIL_FACTOR;
     if (__capacity <= 0 )finish ();
-        __capacity = 0;
+    __capacity = 0;
 }
 
 ActionType Resource::takeTurn(const Surroundings &s) const

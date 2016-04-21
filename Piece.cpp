@@ -24,7 +24,7 @@ Piece::Piece(const Game &g, const Position &p):__game(g)
 
 Piece::~Piece()
 {
-    
+
 }
 
 ostream & Gaming::operator<<(ostream &os, const Piece &piece)
@@ -34,11 +34,11 @@ ostream & Gaming::operator<<(ostream &os, const Piece &piece)
     {
         piece.print(os);
     }
-    
+
     else
     {
         os << "";
     }
-     
+
     return os;
 }

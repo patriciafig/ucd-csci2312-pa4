@@ -3,7 +3,7 @@
 //  ProgrammingAssignment#4
 //
 //  Created by Patricia Figueroa on 4/10/16.
-//  Copyright © 2016 Patricia Figueroa. All rights reserved.
+//
 //
 
 #include "Agent.h"
@@ -17,7 +17,7 @@ namespace Gaming {
 
     Agent::Agent(const Game &g, const Position &p, double energy) : Piece(g, p)
     {
-       //this ->__energy -= AGENT_FATIGUE_RATE;
+        //this ->__energy -= AGENT_FATIGUE_RATE;
         __energy = energy;
     }
     //destructor
@@ -30,12 +30,12 @@ namespace Gaming {
     {
         __energy -= AGENT_FATIGUE_RATE;
         //if (!this->isViable())
-          //  this->finish();
+        //  this->finish();
     }
 
     Piece &Agent::operator*(Piece &other)
     {
-        
+
         //return other.interact(this);
         Agent *agent = dynamic_cast<Agent*>(&other);
         if (agent)
@@ -47,20 +47,20 @@ namespace Gaming {
             return this-> interact(resource);
         }
         return *this;
-         
+
     }
-         
+
 
     Piece &Agent::interact(Agent *agent)
     {
-     if (__energy > agent->__energy)
+        if (__energy > agent->__energy)
         {
             __energy -=agent->__energy;
             {
                 agent->__energy = 0;
                 agent -> finish ();
-            
-            
+
+
             }
 
         }
@@ -75,8 +75,8 @@ namespace Gaming {
                 agent->__energy -= __energy;
                 finish();
             }
-                
-            }
+
+        }
         this -> finish();
         agent ->finish();
         return *this;

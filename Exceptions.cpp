@@ -46,7 +46,7 @@ namespace Gaming {
     }
 
     InsufficientDimensionsEx::InsufficientDimensionsEx(
-                                                       unsigned minWidth, unsigned minHeight, unsigned width, unsigned height) : DimensionEx(minWidth, minHeight, width, height) {
+            unsigned minWidth, unsigned minHeight, unsigned width, unsigned height) : DimensionEx(minWidth, minHeight, width, height) {
         setName("InsufficientDimensionsEx");
     }
 
@@ -55,7 +55,7 @@ namespace Gaming {
     }
 
     OutOfBoundsEx::OutOfBoundsEx(unsigned maxWidth, unsigned maxHeight, unsigned width, unsigned height)
-    : DimensionEx(maxWidth, maxHeight, width, height){
+            : DimensionEx(maxWidth, maxHeight, width, height){
         setName("OutOfBoundsEx");
     }
 

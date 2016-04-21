@@ -27,8 +27,8 @@ Strategic::~Strategic()
 void Strategic::print(std::ostream &os) const {
     std::string str;
     str = std::to_string(__id);
-    
-   
+
+
     std::stringstream ss;
     ss << Strategic::STRATEGIC_ID;
     ss << str;
