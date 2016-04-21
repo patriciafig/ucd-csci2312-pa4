@@ -6,6 +6,7 @@
 //
 
 #include "Simple.h"
+#include <iomanip>
 #include <sstream>
 
 using namespace std;
@@ -30,29 +31,52 @@ void Simple::print(std::ostream &os) const
     string s;
     getline(ss,s);
     os << s;
+    
+    
 }
+
 
 ActionType Simple::takeTurn(const Surroundings &s) const
 {
-    
-    vector <ActionType> action = {NW,N,NE,W,STAY,E,SW,S,SE};
+    /*
+    vector <ActionType> action
     vector <int> pieceIndex;
     int numDir = 0;
-    
+    vector<int>resource;
+    vector<int>empty;
     random_device rd;
-    mt19937 gen(rd());
-    
-    
-    
-    for (int i = 0; i < s.array.size(); ++i)
+    Position currentPosition(1, 1);
+   for (int i = 0; i < s.array.size(); ++i)
     {
         if(s.array[i] == FOOD || s.array[i] == ADVANTAGE)
         {
-            pieceIndex.push_back(i);
-            numDir++;
+            resource.push_back(i);
+            else if (s.array[i] == EMPTY)
+                empty.push_back(i);
         }
     }
+*/
     
+        vector<int> resource;
+        vector<int> empty;
+        Position currentPosition(1, 1);
+        for (int i = 0; i < s.array.size(); ++i) {
+            if (s.array[i] == FOOD || s.array[i] == ADVANTAGE)
+                resource.push_back(i);
+            else if (s.array[i] == EMPTY)
+                empty.push_back(i);
+        
+        }
+    
+    
+    
+    if (resource.size() > 0)
+        return __game.reachSurroundings(currentPosition, Game::randomPosition(resource));
+    else if (empty.size() > 0)
+        return __game.reachSurroundings(currentPosition, Game::randomPosition(empty));
+    else
+        return STAY;
+/*
     if(numDir > 0)
     {
         uniform_int_distribution<> dis(0, numDir - 1);
@@ -73,6 +97,10 @@ ActionType Simple::takeTurn(const Surroundings &s) const
         uniform_int_distribution<> dis(0, numDir - 1);
         return action[pieceIndex[dis(gen)]];
     }
+ 
+}
+*/
+
     return STAY;
-    
+
 }

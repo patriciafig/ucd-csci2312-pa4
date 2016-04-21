@@ -86,7 +86,7 @@ void Game::populate()
     
     //CONSTRUCTOR
     
-Game::Game()
+Game::Game(): __width(3), __height(3)
 {
     __numInitAgents = 0;
     __numInitResources = 0;
@@ -103,15 +103,17 @@ Game::Game()
     
 }
 
-Game::Game(unsigned width, unsigned height, bool manual)
-{
-    if(width < MIN_WIDTH || height < MIN_HEIGHT)
+    Game::Game(unsigned width, unsigned height, bool manual): __width(width), __height(height)
+    // note: manual population by default
     {
-        throw InsufficientDimensionsEx(MIN_WIDTH, MIN_HEIGHT, width, height);
-    }
+        if (height < MIN_HEIGHT || width < MIN_WIDTH)
+        {
+            throw InsufficientDimensionsEx(MIN_WIDTH, MIN_HEIGHT, width, height);
+        }
+        
     
     __numInitAgents = 0;
-    __numInitResources = 0;
+    __numInitResources = 0;             //__grid.resize(__width * __height);
     __width = width;
     __height = height;
     __verbose = false;
@@ -141,6 +143,10 @@ Game::~Game()
 }
 
 // accessors / getters
+    
+    //unsigned int getWidth() const { return __width; }
+    //unsigned int getHeight() const { return __height; }
+    
 unsigned int Game::getNumPieces() const
 {
     return getNumAgents()+getNumResources();
@@ -212,15 +218,21 @@ const Piece *Game::getPiece(unsigned int x, unsigned int y) const
 }
 
 // grid population methods
-    
-    void Game::addSimple(const Position &position) {
-        int index = position.y + (position.x * __width);
-        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
-        if (__grid[index]) throw PositionNonemptyEx(position.x, position.y);
+    void Game::addSimple(const Position &position)
+    {
         
-        __grid[index] = new Simple(*this, position, STARTING_AGENT_ENERGY);
-}
-
+        if ((position.x*__width + position.y) > __grid.size())
+        {
+            throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        }
+        if (__grid[position.x * __width + position.y] != nullptr)
+        {
+            throw PositionNonemptyEx(position.x, position.y);
+        }
+        
+        __grid[position.x * __width + position.y] = new Simple(*this, position,STARTING_AGENT_ENERGY);
+        
+    }
 
 // used for testing only
 void Game::addSimple(const Position &position, double energy)
@@ -359,6 +371,7 @@ const Surroundings Game::getSurroundings(const Position &pos) const
 }
 
 // gameplay methods
+    
 const ActionType Game::reachSurroundings(const Position &from, const Position &to)
 {
     
@@ -406,73 +419,83 @@ const ActionType Game::reachSurroundings(const Position &from, const Position &t
     return temp;
 }
 
-bool Game::isLegal(const ActionType &ac, const Position &pos) const
-{
-    Surroundings ss = getSurroundings(pos);
-    std::vector <ActionType> direction = {NW,N,NE,W,STAY,E,SW,S,SE};
-    int directionInt;
-    bool valid;
-    
-    for (int count = 0; count < direction.size(); ++count)
+    bool Game::isLegal(const ActionType &ac, const Position &pos) const
     {
-        if(direction[count]== ac)
+        int x, y;
+        x = pos.x;
+        y = pos.y;
+        switch (ac)
         {
-            directionInt = count;
-            break;
+            case E: y++;
+                break;
+            case NE: y++;
+                x--;
+                break;
+            case N: x--;
+                break;
+            case NW: y--;
+                x--;
+                break;
+            case W: y--;
+                break;
+            case SW: y--;
+                x++;
+                break;
+            case S: x++;
+                break;
+            case SE: x++;
+                y++;
+                break;
+            default:
+                break;
         }
+        Position p((unsigned )x, (unsigned)y);
+        if (p.y < __width  && p.x < __height )
+            return true;
+        return false;
     }
-    valid = ss.array[directionInt] != INACCESSIBLE;
     
-    return valid;
-    
-}
-
 // note: assumes legal, use with isLegal()
-const Position Game::move(const Position &pos, const ActionType &ac) const
-{
     
-    Position newPos;
-    
-    if(ac == NW)
+    const Position Game::move(const Position &pos, const ActionType &ac) const // note: assumes legal, use with isLegal()
     {
-        newPos = Position(pos.x - 1, pos.y - 1);
-    }
-    else if(ac == N)
-    {
-        newPos = Position(pos.x - 1, pos.y);
-    }
-    else if(ac == NE)
-    {
-        newPos = Position(pos.x - 1, pos.y + 1);
-    }
-    else if(ac == W)
-    {
-        newPos = Position(pos.x, pos.y - 1);
-    }
-    else if(ac == STAY)
-    {
-        newPos = Position(pos.x, pos.y);
-    }
-    else if(ac == E)
-    {
-        newPos = Position(pos.x, pos.y + 1);
-    }
-    else if(ac == SW)
-    {
-        newPos = Position(pos.x + 1, pos.y - 1);
-    }
-    else if(ac == S)
-    {
-        newPos = Position(pos.x + 1, pos.y);
-    }
-    else if(ac == SE)
-    {
-        newPos = Position(pos.x + 1, pos.y + 1);
+        
+        if (isLegal(ac, pos)) {
+            int x, y;
+            x = pos.x;
+            y = pos.y;
+            switch (ac) {
+                case E: y++;
+                    break;
+                case NE: y++;
+                    x--;
+                    break;
+                case N: x--;
+                    break;
+                case NW: y--;
+                    x--;
+                    break;
+                case W: y--;
+                    break;
+                case SW: y--;
+                    x++;
+                    break;
+                case S: x++;
+                    break;
+                case SE: x++;
+                    y++;
+                    break;
+                default:
+                    break;
+            }
+            Position p((unsigned )x, (unsigned)y);
+            return p;
+            
+        }
+        return pos;
+        
     }
     
-    return newPos;
-}
-
 // play a single round
 void Game::round() {
     
@@ -579,8 +602,22 @@ void Game::play(bool verbose)
     }
 }
 
+    // Print as follows the state of the game after the last round:
+    //
+    // Round 1:
+    // [F0   ][     ][T1   ]
+    // [W2   ][     ][F3   ]
+    // [     ][S4   ][     ]
+    // Status: Playing...
+    //
+    // Round 5:
+    // [     ][     ][     ]
+    // [     ][T1   ][     ]
+    // [     ][     ][     ]
+    // Status: Over!
+    //
 
-ostream & Gaming::operator<<(std::ostream &os, const Game &game)
+    std::ostream &operator<<(std::ostream &os, const Game &game)
 {
     os << "Round " << game.__round << std::endl;
     for (int count = 0; count < game.__height; ++count)

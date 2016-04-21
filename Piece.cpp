@@ -29,6 +29,7 @@ Piece::~Piece()
 
 ostream & Gaming::operator<<(ostream &os, const Piece &piece)
 {
+
     if(&piece != nullptr)
     {
         piece.print(os);
@@ -38,5 +39,6 @@ ostream & Gaming::operator<<(ostream &os, const Piece &piece)
     {
         os << "";
     }
+     
     return os;
 }

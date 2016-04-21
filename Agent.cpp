@@ -7,6 +7,7 @@
 //
 
 #include "Agent.h"
+#include "Food.h"
 #include "Advantage.h"
 
 using namespace std;
@@ -16,42 +17,66 @@ namespace Gaming {
 
     Agent::Agent(const Game &g, const Position &p, double energy) : Piece(g, p)
     {
-        this ->__energy -= AGENT_FATIGUE_RATE;
+       //this ->__energy -= AGENT_FATIGUE_RATE;
+        __energy = energy;
     }
     //destructor
-    Agent::~Agent() {
+    Agent::~Agent()
+    {
 
     }
 
     void Agent::age()
     {
         __energy -= AGENT_FATIGUE_RATE;
+        //if (!this->isViable())
+          //  this->finish();
     }
 
     Piece &Agent::operator*(Piece &other)
     {
-        return other.interact(this);
-
+        
+        //return other.interact(this);
+        Agent *agent = dynamic_cast<Agent*>(&other);
+        if (agent)
+        {
+            return this -> interact(agent);
+        }
+        Resource *resource = dynamic_cast<Resource*>(&other);
+        if (resource) {
+            return this-> interact(resource);
+        }
+        return *this;
+         
     }
+         
 
     Piece &Agent::interact(Agent *agent)
     {
-        if (this ->__energy < agent ->__energy)
+     if (__energy > agent->__energy)
         {
-            this ->finish();
+            __energy -=agent->__energy;
+            {
+                agent->__energy = 0;
+                agent -> finish ();
+            
+            
+            }
 
         }
         else {
-            if (this->__energy > agent ->__energy)
+            if (__energy < agent ->__energy)
             {
-                this -> __energy -= agent->__energy;
-                agent->finish();
+                agent -> __energy -= __energy;
+                __energy = 0;
+                finish();
             }
             else {
                 agent->__energy -= __energy;
                 finish();
             }
-        }
+                
+            }
         this -> finish();
         agent ->finish();
         return *this;
